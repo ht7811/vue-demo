@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>2.3语法糖（缩写）</title>
+	</head>
+	<body>
+        <h1>2.3语法糖（缩写）</h1>
+        <p>
+            语法糖是指在不影响功能的情况下，添加某种方法实现同样的效果，从而方便程序开发。
+            <br />
+            Vue.js的v-bind和v-on指令都提供了语法糖，也可以说是缩写，比如v-bind，可以省略v-bind，直接写一个冒号 “:” ：
+        </p>
+        <pre>
+            &lt;a v-bind:href="url"&gt;链接&lt;/a&gt;
+            &lt;img v-bind:src="imgUrl" /&gt;
+            <!-- 缩写为 -->
+            &lt;a :href="url">链接&lt;/a&gt;
+            &lt;img :src="imgUrl" /&gt;
+            
+            v-on可以直接用“@“来缩写：
+            &lt;button v-on:click="handleClose"&gt;点击隐藏&lt;/button&gt;
+            <!-- 缩写为 -->
+            &lt;button @click="handleClose"&gt;点击隐藏&lt;/button&gt;
+        </pre>
+    </body>
+</html>    

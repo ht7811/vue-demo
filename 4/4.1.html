@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>4.1了解v-bind指令</title>
+	</head>
+	<body>
+        <h1>4.1了解v-bind指令</h1>
+        <p>
+            在之前已经了解过指令v-bind的基本用法以及它的语法糖了，它的主要作用就是动态更新html元素上的属性
+            例如：
+            <pre>
+                <div id="app">
+                    <a :href="url">链接</a>
+                    <img :src="imgUrl" />
+                </div>
+                <script>
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            url: 'https://www.baidu.com',
+                            imgUrl: 'http://xxx.xxx.xx/img.png'
+                        }
+                    })
+                </script>
+            </pre>
+        </p>
+        <p>
+            链接的href属性和图片得而src属性都被动态设置了，当数据发生变化时，就会重新渲染。
+            <br />
+            在数据绑定中，最常见的两个需求就是元素的样式名称class和内联样式style的动态绑定
+        </p>
+    </body>
+</html>    

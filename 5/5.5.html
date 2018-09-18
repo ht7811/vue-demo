@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>5.5 实战：利用计算属性、指令等知识开发购物车</title>
+        <link href="../static/style.css" />
+	</head>
+	<body>
+        <h1>5.5 实战：利用计算属性、指令等知识开发购物车</h1>
+        <br />
+        <h2>购物车示例</h2>
+        <pre>
+            &lt;div id="app" v-cloak&gt;
+                &lt;template v-if="list.length"&gt;
+                    &lt;table&gt;
+                        &lt;thead&gt;
+                            &lt;tr&gt;
+                                &lt;th&gt;&lt;/th&gt;
+                                 &lt;th&gt;商品名称&lt;/th&gt;
+                                 &lt;th&gt;商品单价&lt;/th&gt;
+                                 &lt;th&gt;购买数量&lt;/th&gt;
+                                 &lt;th&gt;操作&lt;/th&gt;
+                            &lt;/tr&gt;
+                        &lt;/thead&gt;
+                        &lt;tbody&gt;
+                            &lt;tr v-for="(item, index) in list"&gt;
+                                &lt;td&gt;{{ index + 1 }}&lt;/td&gt;
+                                &lt;td&gt;{{ item.name }}&lt;/td&gt;
+                                 &lt;td&gt;{{ item.price }}&lt;/td&gt;
+                                 &lt;td&gt;{{ item.count }}&lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;button @click="handleReduce(index)" :disabled="item.count === 1"&gt;-&lt;/button&gt;
+                                    &lt;button @click="handleAdd(index)"&gt;+&lt;/button&gt;
+                                &lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;button @click="handleRemove(index)"&gt;移除&lt;/button&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                        &lt;/tbody&gt;
+                    &lt;/table&gt;
+                    &lt;div&gt;总价：￥{{ totalPrice }}&lt;/div&gt;
+                &lt;/template&gt;
+                &lt;div v-else&gt;购物车为空&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"&gt;&lt;/script&gt;
+            &lt;script src="../static/5.5.js"&gt;&lt;/script&gt;
+            
+            js:
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    list: [
+                        {
+                            id: 1,
+                            name: 'iphone 7',
+                            price: '3988',
+                            count: 1
+                        },
+                        {
+                            id: 2,
+                            name: 'ipad Pro',
+                            price: '3588',
+                            count: 1
+                        },
+                        {
+                            id: 1,
+                            name: 'MacBook Pro',
+                            price: '13988',
+                            count: 1
+                        }
+                    ]
+                },
+                computed: {
+                    totalPrice: function(){
+                        var total = 0;
+                        for(var i = 0; i &lt; this.list.length; i++){
+                            total += this.list[i].price * this.list[i].count;
+                        }
+                        return total.toString().replace(/\B(?=(\d{3})+$)/g, ',');//将结果转换为带有“千位分隔符”的数字
+                    }
+                },//注意：计算computed要放在方法methods之前
+                methods: {
+                    handleReduce: function(index){
+                        if(this.list[index].count === 1) return;
+                        this.list[index].count--;
+                    },
+                    handleAdd: function(index){
+                        this.list[index].count++;
+                    },
+                    handleRemove: function(index){
+                        this.list.splice(index, 1);
+                    }
+                }
+            })
+            
+            效果如下：
+        </pre>
+        
+         <div id="app" v-cloak>
+            <template v-if="list.length">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                             <th>商品名称</th>
+                             <th>商品单价</th>
+                             <th>购买数量</th>
+                             <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in list">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ item.name }}</td>
+                             <td>{{ item.price }}</td>
+                             <td>{{ item.count }}</td>
+                            <td>
+                                <button @click="handleReduce(index)" :disabled="item.count === 1">-</button>
+                                <button @click="handleAdd(index)">+</button>
+                            </td>
+                            <td>
+                                <button @click="handleRemove(index)">移除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>总价：￥{{ totalPrice }}</div>
+            </template>
+            <div v-else>购物车为空</div>
+        </div>
+        <br />
+        <p>
+            <b>练习1：</b>在当前示例的基础上扩展商品列表，新增一项是否选中该商品的功能，总价变为只计算选中商品的总价，同时提供一个全选的按钮。
+        </p>
+        <p>
+            <b>练习2：</b>将商品列表list改为一个二维数组来实现商品分类，比如可分为“电子产品”，“生活用品”，和“果蔬”，
+            同类商品聚合在一起。提示，你可能会用到两次v-for。
+        </p>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script src="../static/5.5.js"></script>
+    </body>
+</html>    

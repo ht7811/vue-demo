@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>2.2指令与事件</title>
+	</head>
+	<body>
+	       <h1>2.2指令与事件</h1>
+        <p>
+            指令（Directives）是Vue.js模板中最常用的一项功能，它带有前缀v-，如v-if、v-htm、v-pre等。
+            <br />
+            指令的主要职责就是当其表达式的值改变时，相应地将某些行为应用到DOM上。
+        </p>
+        <div>
+            <p>例如：</p>
+            <pre>
+                 &lt;div id="app"&gt;
+                    &lt;p v-if="show">显示这段文本&lt;/p&gt;
+                    &lt;button v-on:click="handleClose">点击隐藏&lt;/button&gt;
+               &lt;/div&gt;
+                 &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            show: true
+                        },
+                        methods: {
+                            handleClose: function(){
+                                this.show = false
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            <div id="app">
+                <p v-if="show">显示这段文本</p>
+                <button v-on:click="handleClose">点击隐藏</button>
+            </div>
+             <script>
+                var app = new Vue({
+                    el: '#app',
+                    data: {
+                        show: true
+                    },
+                    methods: {
+                        handleClose: function(){
+                            this.show = false
+                        }
+                    }
+                })
+            </script>
+            <p>
+                在button按钮上，使用v-on:clidk给该元素绑定了一个点击事件，在普通元素上，v-on可以监听原生的DOM事件，
+                <br />
+                除了click外，还有dbclick、keyup、mousemove等。表达式可以是一个方法名，这些方法都写在Vue实例的methods属性内，
+                并且是函数的形式，函数内的this指向的是当前Vue实例本身，因此可以直接使用this.xxx的形式来访问或修改数据，
+                如示例中的this.show = false；把数据show修改为了false，所以点击按钮时，文本p元素就被移除了。
+            </p>
+            <p>
+                表达式除了方法名，也可以直接是一个内联语句：
+               <pre>
+                    &lt;div id="app"&gt;
+                        &lt;p v-if="show">这是一段文本&lt;/p&gt;
+                        &lt;button v-on:click="show = false">点击隐藏&lt;/button&gt;
+                    &lt;/div&gt;
+                    &lt;script&gt;
+                        var app = new Vue({
+                            el: '#app',
+                            data: {
+                                show: true
+                            }
+                        })
+                    &lt;/script&gt;
+               </pre>
+                如果绑定的事件要处理复杂的业务逻辑，建议还是在methods里声明一个方法，这样可读性更强也更好维护。
+            </p>
+            <p>
+                Vue.js将methods里的方法也代理了，所以也可以像访问Vue数据那样来调用方法：
+                <pre>
+                    &lt;div id="app"&gt;
+                        &lt;p v-if="show"&gt;这是一段文本&lt;/p&gt;
+                        &lt;button v-on:click="handleClose"&gt;点击隐藏&lt;/button&gt;
+                   &lt;/div&gt;
+                    &lt;script&gt;
+                        var app = new Vue({
+                            el: '#app',
+                            data: {
+                                show: true
+                            },
+                            methods: {
+                                handleClose: function(){
+                                    this.close();
+                                },
+                                close: function(){
+                                    this.show = false;
+                                }
+                            }
+                        })
+                    &lt;/script&gt;
+                </pre>
+                在handleClose方法内，直接调用了this.close函数。还有以下几种用法都是正确的：
+                <pre>
+                    var app = new Vue({
+                     el: 'app',
+                     data: {
+                        show: true
+                     },
+                     methods: {
+                        init: function(text){
+                            console.log(text);
+                        }
+                     },
+                     mounted: function(){
+                        this.init('在初始化时调用');   //在初始化时调用
+                     }
+                    });
+                    
+                    app.init('通过外部调用'); //在Vue实例外部调用
+                </pre>
+            </p>
+        </div>
+	</body>
+</html>	

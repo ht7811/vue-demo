@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>6.2 修饰符</title>
+        <link href="../static/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	</head>
+	<body>
+        <h1>6.2 修饰符</h1>
+        <p>
+            与事件的修饰符类似，v-model也有修饰符，用于控制数据同步的时机。
+            <br />
+            <b>.lazy：</b>
+            <br />
+            在输入框中，v-model默认是在input事件中同步输入框的数据（除了提示中介绍的中文输入法情况外），
+            使用修饰符.lazy会转变为在change事件中同步，示例代码如下：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;input type="text" v-model.lazy="message" /&gt;
+                    &lt;p&gt;{{ message }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new   Vue({
+                        el: '#app',
+                        data: {
+                            message: ''
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            这时，message并不是实时改变的，而是在失焦或按回车时才更新。
+        </p>
+       <div id="app">
+            <input type="text" v-model.lazy="message" />
+           <p>{{ message }}</p>
+        </div>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    message: ''
+                }
+            })
+        </script>
+        <br />
+    
+        <p>
+            <br />
+            <b>.number：</b>
+            <br />
+            使用修饰符.numbe可以将输入转换为Number类型，否则虽然你输入的是数字，但它的类型其实是String，比如在数字输入框时会比较有用，示例代码如下：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;input type="number" v-model.number="message" /&gt;
+                    &lt;p&gt;{{ typeof message }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            message: 123
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>   
+        </p>
+        <div id="app-1">
+            <input type="number" v-model.number="message" />
+            <p>{{ typeof message }}</p>
+        </div>
+        <script>
+            var app1 = new Vue({
+                el: '#app-1',
+                data: {
+                    message: 123
+                }
+            })
+        </script>
+        <br />
+    
+
+        <p>
+            <br />
+            <b>.trim：</b>
+            <br />
+            修饰符.trim可以自动过滤输入的首尾空格，示例代码如下：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;input type="text" v-model.trim="message" /&gt;
+                    &lt;p&gt;{{ message }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            message: ' '
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-2">
+            <input type="text" v-model.trim="message" />
+            <p>{{ message }}</p>
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    message: ' '
+                }
+            })
+        </script>
+        <p>从Vue.js 2.x开始，v-model还可以用于自定义组件，满足定制化的需求，在第7章会详细介绍。</p>
+    </body>
+</html>    

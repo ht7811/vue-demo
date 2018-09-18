@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>6.1 表单与v-model</title>
+        <link href="../static/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	</head>
+	<body>
+        <h1>6.1 基本用法</h1>
+        <p>
+            表单控件在实际业务中较为常见，比如单选、多选、下拉框、输入框等，用它们可以完成数据的录入、校验、提交等。Vue.js提供了v-model指令，用于在表单类元素上双向绑定数据，例如在输入框上使用时，输入的内容会实时映射到绑定的数据上。例如：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;input type="text" v-model="message" placeholder="输入..."/&gt;
+                    &lt;p&gt;输入的内容是：{{ message }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            message: ''
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            在输入框输入的同时，{{ message }}也会实时将内容渲染在视图中，如下：
+        </p>
+        <div id="app">
+            <input type="text" v-model="message" placeholder="输入..."/>
+            <p>输入的内容是：{{ message }}</p>
+        </div>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    message: ''
+                }
+            })
+        </script>
+        <br />
+        <p>
+            <b>单选按钮：</b><br />
+            单选按钮在单独使用时，不需要v-model，直接使用v-bind绑定一个布尔类型的值，为真时选中，为否时不选，例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;input type="radio" :checked="picked" /&gt;
+                    &lt;label&gt;单选按钮&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1= new Vue({
+                        el: '#app-1',
+                        data: {
+                            picked: false
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-1">
+            <input type="radio" :checked="picked" />
+            <label>单选按钮</label>
+        </div>
+        <script>
+            var app1= new Vue({
+                el: '#app-1',
+                data: {
+                    picked: false
+                }
+            })
+        </script>
+        <br />
+
+        <p>
+            如果是组合使用来实现互斥选择的效果，就需要v-model配合value来使用：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;input type="radio" v-model="picked" value="html" /&gt;html
+                    &lt;input type="radio" v-model="picked" value="js" /&gt;js
+                    &lt;input type="radio" v-model="picked" value="css" /&gt;css
+                    选择的项是：{{ picked }}
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            picked: 'js'
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            效果如下：
+        </p>
+        <div id="app-2">
+            <input type="radio" v-model="picked" value="html" />html
+            <br />
+            <input type="radio" v-model="picked" value="js" />js
+            <br />
+            <input type="radio" v-model="picked" value="css" />css
+            <br />
+            选择的项是：{{ picked }}
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    picked: 'js'
+                }
+            })
+        </script>
+        <br />
+        <p>
+            <b>复选框：</b><br />
+            复选框也分单独使用和组合使用，不过用法稍与单选框不同。复选框单独使用时，也是使用v-model来绑定一个布尔值，例如
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;input type="checkbox" v-model="checked"  id="checked"/&gt;
+                    &lt;label for="checked"&gt;选择状态：{{ checked }}&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app3 = new Vue({
+                        el: '#app-3',
+                        data: {
+                            checked: false
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            在勾选时，数据checked的值变为了true，label中渲染的内容也会更新。
+        </p>    
+        <div id="app-3">
+            <input type="checkbox" v-model="checked"  id="checked"/>
+            <label for="checked">选择状态：{{ checked }}</label>
+        </div>
+        <script>
+            var app3 = new Vue({
+                el: '#app-3',
+                data: {
+                    checked: false
+                }
+            })
+        </script>
+        <br />
+
+        <p>
+            在组合使用时，也是v-model与value值一起，多个勾选框都绑定到同一个数组类型的数据，value的值在数组当中，就会选中这一项。这一过程也是双向的，在勾选时，value的值也会自动push到这个数组中，示例代码如下：
+            <pre>
+                &lt;div id="app-4"&gt;
+                    &lt;input type="checkbox" v-model="checked" value="html" /&gt;
+                    &lt;label for="html"&gt;HTML&lt;/label&gt;
+                    &lt;input type="checkbox" v-model="checked" value="js" /&gt;
+                    &lt;label for="js"&gt;JS&lt;/label&gt;
+                    &lt;input type="checkbox" v-model="checked" value="css" /&gt;
+                    &lt;label for="css"&gt;CSS&lt;/label&gt;
+                    &lt;p&gt;选择的项是： {{ checked }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app4 = new Vue({
+                        el: '#app-4',
+                        data: {
+                            checked: ['js']
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            效果如下：
+        </p>
+        <div id="app-4">
+            <input type="checkbox" v-model="checked" value="html" />
+            <label for="html">HTML</label>
+            <br />
+            <input type="checkbox" v-model="checked" value="js" />
+            <label for="js">JS</label>
+            <br />
+            <input type="checkbox" v-model="checked" value="css" />
+            <label for="css">CSS</label>
+            <p>选择的项是： {{ checked }}</p>
+        </div>
+        <script>
+            var app4 = new Vue({
+                el: '#app-4',
+                data: {
+                    checked: ['js']
+                }
+            })
+        </script>
+        <br />
+        <p>
+            <b>选择列表：</b><br />
+            选择列表就是下拉选择器，也是常见的表单控件，同样分为单选和多选两种方式。先看一下单选的示例代码：
+            <pre>
+              &lt;div id="app-5"&gt;
+                &lt;select v-model="selected"&gt;
+                    &lt;option&gt;html&lt;/option&gt;
+                    &lt;option value="js"&gt;javascript&lt;/option&gt;
+                    &lt;option&gt;css&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;p&gt;选择的项是：{{ selected }}&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;script&gt;
+                var app5 = new Vue({
+                    el: '#app-5',
+                    data: {
+                        selected: 'html'
+                    }
+                })
+              &lt;/script&gt;
+            </pre>
+            option是备选项，如果含有value属性，v-model就会优先匹配value的值；如果没有
+            就会直接匹配&lt;option&gt;的text，比如第二项选中时，selected的值就是js，而不是javascript。
+        </p>    
+        <div id="app-5">
+            <select v-model="selected">
+                <option>html</option>
+                <option value="js">javascript</option>
+                <option>css</option>
+            </select>
+        </div>
+        <script>
+            var app5 = new Vue({
+                el: '#app-5',
+                data: {
+                    selected: 'html'
+                }
+            })
+        </script>
+        <br />
+        <p>
+            <b>下拉多选：</b><br />
+            给&lt;selected&gt;添加属性multiple就可以多选了，此时v-model绑定的是一个数组，
+            与复选框用法类似，示例代码如下：
+            <pre>
+                &lt;div id="app-6"&gt;
+                    &lt;select v-model="selected" multiple&gt;
+                        &lt;option&gt;html&lt;/option&gt;
+                        &lt;option value="js"&gt;javascript&lt;/option&gt;
+                        &lt;option&gt;css&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app6 = new Vue({
+                        el: '#app-6',
+                        data: {
+                            selected: [ 'html', 'js' ]
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-6">
+            <select v-model="selected" multiple>
+                <option>html</option>
+                <option value="js">javascript</option>
+                <option>css</option>
+            </select>
+            <p>选择的项是：{{ selected }}</p>
+        </div>
+        <script>
+            var app6 = new Vue({
+                el: '#app-6',
+                data: {
+                    selected: []
+                }
+            })
+        </script>
+        
+        <p>
+            <b>在业务中，&lt;option&gt;经常用v-for动态输出，value跟text也是用v-bind
+                来动态输出的，例如：
+            </b>
+            <pre>
+                &lt;div id="app-7"&gt;
+                    &lt;select v-model="selected"&gt;
+                        &lt;option v-for="option in options" :value="option.value"&gt;{{ option.text }}&lt;/option&gt;
+                    &lt;/select&gt;
+                    &lt;p&gt;选择的项是：{{ selected }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app7 = new Vue({
+                        el: '#app-7',
+                        data: {
+                            selected: [ 'html' ],
+                            options: [
+                                {value: 'HTML',  text: 'html'},
+                                {value: 'JS',  text: 'javascript'},
+                                {value: 'CSS',  text: 'css'}
+                            ]
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-7">
+            <select v-model="selected">
+                <option v-for="option in options" :value="option.value">{{ option.text }}</option>
+            </select>
+            <p>选择的项是：{{ selected }}</p>
+        </div>
+        <script>
+            var app7 = new Vue({
+                el: '#app-7',
+                data: {
+                    selected: [ 'html' ],
+                    options: [
+                        { value: 'HTML', text: 'html' },
+                        { value: 'JS', text: 'javascript' },
+                        { value: 'CSS', text: 'css' }
+                    ]
+                }
+            })
+        </script>
+        <br />
+        <p>
+            虽然用选择列表&lt;select&gt;控件可以简单地完成下拉需求，但是实际业务中反而不常用，
+            因为她的样式依赖平台和浏览器，无法统一，也不太美观，功能也受限，比如不支持搜索，所以
+            常见的解决方案是用div模拟一个类似的控件。当阅读完第7章组件的内容后，可以尝试编写一个下拉选择器的通用组件。
+        </p>
+
+        
+    </body>
+</html>    

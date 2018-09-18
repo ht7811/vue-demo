@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>5.1内置指令</title>
+	</head>
+	<body>
+        <h1>5.1基本指令</h1>
+        <br />
+        <h2>5.1.1 v-cloak</h2>
+        <p>
+            v-cloak不需要表达式，它会在Vue实例结束编译时从绑定的html元素上移除，经常和css的display: none;配合使用：
+            <pre>
+                &lt;div id="app"&gt;
+                    {{ message }}
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            message: '这是一段文本'
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            这时虽然已经加了指令v-cloak，但其实并没有起到任何作用，当网速较慢、Vue.js文件还没加载完时，在
+            页面上会显示{{ message }}的字样，直到Vue创建实例、编译模板时，DOM才会被替换，所以这个过程屏幕是有闪动的。
+            只要加一句css就可以解决这个问题了：
+            <pre>
+                [v-cloak] {
+                    display: none
+                }
+            </pre>
+            在一般情况下，v-cloak是一个解决初始化慢导致页面闪动的最佳实践，对于简单的项目很实用，但是在
+            具有工程化的项目里，比如后面进阶篇将介绍的webpack和vue-router时，项目的html结构只有一个空的div元素，
+            剩余的内容都是由路由器去挂载不同的组件完成的，所以不再需要v-cloak。
+        </p>
+    
+    
+        <br />
+        <br />
+        <h2>5.1.2 v-once</h2>
+        <p>
+            v-once也是一个不需要表达式的指令，作用是定义它的元素或组件只渲染一次，包括元素或组件的所有子节点。
+            首次渲染后，不再随数据的变化重新渲染，将被视为动态内容，例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;span v-once&gt;{{ message }}&lt;/span&gt;
+                    &lt;div v-once&gt;
+                        &lt;span&gt;{{ message }}&lt;/span&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            message: '这是一段文本'
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            v-once在业务中也很少使用，当你需要进一步优化性能时，可能会用到。
+        </p>
+    </body>
+</html>    

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>5.4 方法与事件</title>
+	</head>
+	<body>
+        <h1>5.4 方法与事件</h1>
+        <br />
+        <h2>5.4.1 基本用法</h2>
+        <p>
+            在第2.2节中，我们已经引入了Vue事件处理的概念v-on，在事件绑定上，类似原生Javascript的onclick等写法，也是在HTML上进行监听的。例如，我们监听一个按钮的点击事件，设置一个计数器，每点击一次都加1：
+            <pre>
+                &lt;div id="app"&gt;
+                    点击次数： {{ counter }}
+                    &lt;button @click="counter++"&gt;+1&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            counter: 0
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            @click的表达式可以直接使用javascript语句，也可以是一个在Vue实例中methods选项内的函数名，比如对上例进行扩展，再增加一个按钮，点击一次，计数器增加10：
+            <pre>
+                <div id="app">
+                    点击次数： {{ counter }}
+                    <button @click="handleAdd()">+1</button>
+                    <button @click="handleAdd(10)">+10</button>
+                </div>
+                <script>
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            counter: 0
+                        },
+                        methods: {
+                            handleAdd: function(count){
+                                count = count || 1;
+                                //this指向当前Vue实例app
+                                this.counter += count;
+                            }
+                        }
+                    })
+                </script>
+            </pre>
+            在methods中定义了我们需要的方法供@click调用，需要注意的是，@click调用的方法名后可以不跟括号“()”。
+            此时，如果该方法有参数，默认会将原生事件对象event传入，可以尝试修改为@click="handleAdd"，然后在handleAdd内打印出count参数看看。在大部分业务场景中，如果方法不需要传入参数，为了简便可以不写括号。
+        </p>
+        <p>
+            Vue提供了一个特殊变量$event，用于访问原生DOM事件，例如下面的实例可以阻止链接打开：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;a href="http://www.baidu.com" @click="handleClick('禁止打开', $event)"&gt;打开链接&lt;/a&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        methods: {
+                            handleClick: function(message, event){
+                                event.preventDefault(); //preventDefault()通知浏览器不要执行与事件关联的默认动作
+                                window.alert(message);
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-1">
+            <a href="http://www.baidu.com" @click="handleClick('禁止打开', $event)">打开链接</a>
+        </div>
+        <script>
+            var app1 = new Vue({
+                el: '#app-1',
+                methods: {
+                    handleClick: function(message, event){
+                        event.preventDefault();
+                        window.alert(message);
+                    }
+                }
+            })
+        </script>
+
+
+        <hr />
+        <br />
+        <br />
+
+        <h2>5.4.2 修饰符</h2>
+        <p>
+            在上例使用的event.preventDefault()也可以使用Vue事件的修饰符来实现，在@click绑定的事件后加小圆点“.”再跟一个后缀来使用修饰符。Vue支持以下修饰符：
+        </p>
+        <div>
+            <ul>
+                <li>stop 阻止单击事件冒泡</li>
+                <li>prevent 阻止默认事件</li>
+                <li>capture 添加事件侦听器时使用事件捕获模式。即给元素增加一个监听器，当元素发生冒泡时，先触发带有该修饰符的元素。若有多个该修饰符，则由外而内触发。就是谁有该事件修饰符，就先触发谁。</li>
+                <li>self 只当事件在该元素本身（而不是子元素）触发时触发回调</li>
+                <li>once 只触发一次，组件同样适用</li>
+            </ul>
+        </div>
+        <p>
+            具体用法如下：
+                <pre>
+                &lt;!-- 阻止单击事件冒泡 --&gt;
+                &lt;a @click.stop="handle"&gt;&lt;/a&gt;
+                &lt;!-- 提交页面不再重载页面 --&gt;
+                &lt;form @submit.prevent="handle"&gt;&lt;/form&gt;
+                &lt;!-- 修饰符可以串联 --&gt;
+                &lt;a @click.stop.prevent="handle"&gt;&lt;/a&gt;
+                &lt;!-- 只有修饰符 --&gt;
+                &lt;form @submit.prevent&gt;&lt;/form&gt;
+                &lt;!-- 添加事件侦听器时使用事件捕获模式 --&gt;
+                &lt;div @click.capture="handle"&gt;&lt;/div&gt;
+                &lt;!-- 只当事件在该元素本身（而不是子元素）触发时触发回调 --&gt;
+                &lt;div @click.self="handle"&gt;&lt;/div&gt;
+                &lt;!-- 只触发一次，组件同样适用 --&gt;
+                &lt;div @click.once="handle"&gt;&lt;/div&gt;
+            </pre>
+        </p>
+        <p>
+            capture修饰符示例：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;div id="obj1" @click.capture="doc"&gt;
+                        obj1
+                        &lt;div id="obj2" @click.capture="doc"&gt;
+                            obj2
+                            &lt;div id="obj3"&gt;
+                                obj3
+                                &lt;div id="obj4" @click="doc"&gt;
+                                    obj4
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            id: ''
+                        },
+                        methods: {
+                            doc: function(){
+                                this.id = event.currentTarget;  //currentTarget获得监听器触发了事件的那个元素
+                                alert(this.id);
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            渲染结果：
+        </p>
+        <div id="app-2">
+            <div id="obj1" @click.capture="doc">
+                obj1
+                <div id="obj2" @click.capture="doc">
+                    obj2
+                    <div id="obj3" @click="doc">
+                        obj3
+                        <div id="obj4" @click="doc">
+                            obj4
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    id: ''
+                },
+                methods: {
+                    doc: function(){
+                        this.id = event.currentTarget.id;
+                        alert(this.id);
+                    }
+                }
+            })
+        </script>
+        <p>
+            点击obj4的时候，弹出的顺序为：obj1、obj2、obj4、obj3；由于1,2有修饰符，所以先触发事件，然后就是4本身触发，最后冒泡事件。
+        </p>
+        <br />
+        <p>
+            在表单上监听键盘事件时，还可以使用按键修饰符，比如按下具体某个键时才调用方法：
+            <br />
+            <pre>
+                &lt;!-- 只有在keyCode是13时调用vm.submit() --&gt;
+                &lt;input @keyup.13="submit"&gt;
+                也可以自己配置按键：
+                Vue.config.keyCode.f1 = 112;
+                //全局定义后，就可以使用@keyup.f1
+            </pre>
+        </p>
+        <p>
+            除了具体的某个keyCode外，Vue还提供了一些快捷名称，以下是全部的别名：
+            <ul>
+                <li>enter</li>
+                <li>tab</li>
+                <li>delete</li>
+                <li>esc</li>
+                <li>space</li>
+                <li>up</li>
+                <li>down</li>
+                <li>left</li>
+                <li>right</li>
+            </ul>
+            这些按键修饰符也可以组合使用，或和鼠标一起配合使用：
+            <ul>
+                <li>ctrl</li>
+                <li>alt</li>
+                <li>shift</li>
+                <li>meta</li>
+            </ul>
+            例如：
+            <pre>
+                &lt;!-- shift + S --&gt;
+                &lt;input @keyup.shift.83="handleSave" &gt;
+                &lt;!-- Ctrl + Click --&gt;
+                &lt;div @click.Ctrl="doSomething"&gt;Do something&lt;/div&gt;
+            </pre>
+            以上就是事件指令v-on的基本内容，在第7章的组件中，我们还将介绍用v-on来绑定自定义事件。
+        </p>
+    </body>
+</html>    

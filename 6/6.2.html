@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>6.2 绑定值</title>
+        <link href="../static/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	</head>
+	<body>
+        <h1>6.2 绑定值</h1>
+        <p>
+            在上一节介绍的单选按钮、复选框和选择列表在单独使用或单选的模式下，v-model绑定的
+            值是一个静态的字符串或布尔值，但在业务中，有时需要绑定一个动态的数据，这时可以
+            用v-bind来实现。
+            <br />
+            <b>单选按钮：</b>
+            <pre>
+                &lt;div id ="app"&gt;
+                    &lt;input type="radio" v-model="picked" :value="value"/&gt;
+                    &lt;label&gt;单选按钮&lt;/label&gt;
+                    &lt;p&gt;{{ picked }}&lt;/p&gt;
+                    &lt;p&gt;{{ value }}&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            picked: false,
+                            value: 123
+                        }
+                    })
+                &lt;/script&gt;
+                在选中时，app.picked === app.value，值都是123。
+            </pre>
+        </p>
+        <div id="app">
+            <input type="radio"  v-model="picked" :value="value"/ >
+            <label>单选按钮</label>
+            <p>{{ picked }}</p>
+            <p>{{ value }}</p>
+        </div>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data:{
+                    picked: false,
+                    value: '666'
+                }
+            })
+        </script>
+        <br />
+    
+    
+        <p>复选框：</p>
+        <pre>
+            &lt;div id="app-1"&gt;
+                &lt;input type="checkbox"
+                       v-model="toggle"
+                       :true-value="value1"
+                       :false-value="value2"/&gt;
+                &lt;label>复选框&lt;/label&gt;
+                &lt;p&gt;{{ toggle }}&lt;/p&gt;
+                 &lt;p&gt;{{ value1 }}&lt;/p&gt;
+                &lt;p&gt;{{ value2 }}&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;script&gt;
+                var app1 = new Vue({
+                    el: '#app-1',
+                    data: {
+                        toggle: false,
+                        value1: 'a',
+                        value2: 'b'
+                    }
+                })
+            &lt;/script&gt;
+        </pre>
+        <div id="app-1">
+            <input type="checkbox"
+                   v-model="toggle"
+                   :true-value="value1"
+                   :false-value="value2"/>
+            <label>复选框</label>
+            <p>{{ toggle }}</p>
+             <p>{{ value1 }}</p>
+            <p>{{ value2 }}</p>
+        </div>
+        <script>
+            var app1 = new Vue({
+                el: '#app-1',
+                data: {
+                    toggle: false,
+                    value1: 'a',
+                    value2: 'b'
+                }
+            })
+        </script>
+        <p>勾选时，app.toggle === app.value1; 未勾选时，app.toggle === app.value2。</p>
+        <br />
+    
+        <p>
+            选择列表：
+            <br />
+            <pre>
+            &lt;div id="app-2"&gt;
+                &lt;select v-model="selected"&gt;
+                    &lt;option :value="{ number: 123 }"&gt;123&lt;/option&gt;
+                &lt;/select&gt;
+                {{ selected.number }}
+            &lt;/div&gt;
+            &lt;script&gt;
+                var app2 = new Vue({
+                    el: '#app-2',
+                    data: {
+                        selected: ''
+                    }
+                })
+            &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-2">
+            <select v-model="selected">
+                <option :value="{ number: 123 }">123</option>
+            </select>
+            {{ selected.number }}
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    selected: ''
+                }
+            })
+        </script>
+        <p>当选中时，app.selected是一个Object，所以app.selected.number === 123</p>
+    </body>
+</html>    

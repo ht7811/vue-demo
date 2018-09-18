@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>7 组件详解</title>
+        <link href="../static/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	</head>
+	<body>
+        <br />
+        <h1>7.2  使用props传递数据</h1>
+        
+        <h3>7.2.1  基本用法</h3>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;组件不仅仅是要把模板的内容进行复用，更重要的是组件间要进行通信。通常父组件
+            的模板中包含子组件，父组件要正向的向子组件传递数据或参数，子组件接收后
+            根据参数的不同来渲染不同的内容或执行操作。这个正向传递数据的过程就需要props来实现的。
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;在组件中，使用props来声明需要从父级接收的数据，props的值可以是两种，
+            一种是字符串数组，一种是对象，本小节先介绍数组的用法。比如我们构造一个数组，接收一个来自父级的数据
+            message，并把它在组件模板中渲染，示例代码如下：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;my-component message="来自父组件的数据"  message1="66666"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ['message', "message1"],
+                        template: '&lt;div&gt;{{ message }}{{  message1 }}&lt;/div&gt;'
+                    });
+
+                    var app = new Vue({
+                        el: '#app'
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app">
+            <my-component message="来自父组件的数据" message1="666666"></my-component>
+        </div>
+        <script>
+            Vue.component("my-component",{
+                props: ["message", "message1"],
+                template: '<div>{{ message }}{{ message1 }}</div>'
+            });
+            
+            var app = new Vue({
+                el: '#app'
+            })
+        </script>
+        <p>
+             &nbsp;&nbsp;&nbsp;&nbsp;props中声明的数据与组件data函数return的数据主要区别就是props的来自父级，而data中的是组件自己的数据，
+            作用域是组件本身，这两种数据都可以在模板template以及计算属性computed和方法methods中使用。
+            上例的数据message就是通过props从父级传递过来的，在组件的自定义标签上直接写该props的 名称，
+            如果要传递多个数据，在props数组中添加项即可。
+            <br />
+             &nbsp;&nbsp;&nbsp;&nbsp;由于HTML不区分大小写，当使用DOM模板时，驼峰命名（camelCase）
+            的props名称要转为端横分隔命名（kabab-case），例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;my-component warning-text="提示信息"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ["warningText"],
+                        template: '&lt;div&gt;{{ warningText }}&lt;/div&gt;'
+                    });
+
+                    var app1 = new Vue({
+                        el: '#app-1'
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-1">
+            <my-component warning-text="提示信息"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                props: ["warningText"],
+                template: '<div>{{ warningText }}</div>'
+            });
+            
+            var app1 = new Vue({
+                el: '#app-1'
+            })
+        </script>
+        <br />
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp;有时候，传递的数据并不是直接写死的，而是来自父级的动态数据，
+            这时可以使用指令v-bind来动态化绑定props的值，当父组件的数据发生变化时，也会传递给子组件。
+            示例代码如下：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;input type="text" v-model="parentMessage" />&gt;
+                    &lt;my-component :message="parentMessage"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component', {
+                        props: ['message'],
+                        template: '&lt;div&gt;{{ message }}&lt;/div&gt;'
+                    });
+
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            parentMessage: ''
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-2">
+            <input type="text" v-model="parentMessage" />
+            <my-component :message="parentMessage"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component', {
+                props: ['message'],
+                template: '<div>{{ message }}</div>'
+            });
+            
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    parentMessage: ''
+                }
+            })
+        </script>
+        <p>
+            这里用v-model绑定了父级的数据parentMessage，当通过输入框任意输入时，子组件
+            接收到的props “message” 也会实时响应，并更新组件模板。
+        </p>
+        <br />
+
+        <p>
+            注意：如果你要直接传递数字、布尔值、数组、对象，而且不使用v-bind，传递的仅仅是字符串，
+            尝试下面的示例来对比：
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;my-component message="[1,2,3]"&gt;&lt;/my-component&gt;
+                    &lt;my-component :message="[1, 2, 3]"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ['message'],
+                        template: '&lt;div&gt;{{ message.length }}&lt;/div&gt;'
+                    })
+
+                    var app3 = new Vue({
+                        el: '#app-3'
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-3">
+             <my-component message="[1,2,3]"></my-component>
+            <my-component :message="[1,2,3]"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                props: ['message'],
+                template: '<div>{{ message.length }}</div>'
+            });
+            
+            var app3 = new Vue({
+                el: '#app-3'
+            })
+        </script>
+        <p>
+            同一个组件使用了两次，区别仅仅在于第二个使用的是v-bind。渲染后的结果：第一个是7，
+            第二个才是数组的长度3。
+        </p>
+    
+        <br />
+<br />
+<br />
+        <h3>7.2.2  单向数据流</h3>
+        <p>Vue 2.x与Vue 1.x比较大的一个改变就是，Vue 2.x通过props传递数据是单向的了，也就是
+            父组件数据变化时会传递给子组件，但是反过来不行。而在Vue 1.x中提供了.sync修饰符来
+            支持双向绑定。之所以这样设计，是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
+        </p>
+        <p>
+            业务中经常遇到两种需要改变prop的情况，一种是父组件传递初始值进来，子组件将它作为初始值保存起来，
+            在自己的作用域可以随意使用和修改。这种情况可以在组件data内再声明一个数据，引用
+            父组件的prop，示例代码如下：
+            <pre>
+                &lt;div id="app-4"&gt;
+                    &lt;my-component :init-count="1"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ['initCount'],
+                        template: '&lt;div&gt;{{ count }}&      <p>
+                                    组件中声明了数据count，它在组件初始化时会获取来自父组件的initCount，之后就与之无关，只用
+                                    维护count，这样就可以避免直接操作initCount。
+                                        </p>lt;/div&gt;',
+                        data: function(){
+                            return {
+                                count: this.initCount
+                            }
+                        }
+                    });
+
+                    var app4 = new Vue({
+                        el: '#app-4'
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-4">
+            <my-component :init-count="6666"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                props: ['initCount'],
+                template: '<div>{{ count }}</div>',
+                data: function(){
+                    return {
+                        count: this.initCount
+                    }
+                }
+            })
+            
+            var app4 = new Vue({
+                el: '#app-4'
+            })
+        </script>
+        <p>
+            组件中声明了数据count，它在组件初始化时会获取来自父组件的initCount，之后就与之无关，只用
+            维护count，这样就可以避免直接操作initCount。
+        </p>
+        <p>
+            另一种情况就是prop作为需要被转变的原始值传入。这种情况用计算属性就可以了，示例代码如下：
+            <pre>
+                &lt;div id="app-5"&gt;
+                    &lt;my-component :width="100"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ['width'],
+                        template: '&lt;div :style="style"&gt;组件内容&lt;/div&gt;',
+                        computed: {
+                            style: function(){
+                                return {
+                                    width: this.width + 'px'
+                                }
+                            }
+                        }
+                    });
+                    var app5 = new Vue({
+                        el: '#app-5'
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-5">
+            <my-component :width="100"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                props: ['width'],
+                template: '<div :style="style">组件内容</div>',
+                computed: {
+                    style: function(){
+                        return {
+                            width: this.width + 'px'
+                        }
+                    }
+                }
+            })
+            var app5 = new Vue({
+                el: '#app-5'
+            })
+        </script>
+    </body>
+</html>    

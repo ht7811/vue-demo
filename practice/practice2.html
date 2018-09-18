@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>5.5 实战：利用计算属性、指令等知识开发购物车</title>
+         <link href="../static/style.css" />
+        <style>
+            ul,li {margin:0;padding:0;list-style:none}
+            .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+            .clearfix{zoom:1}
+            .col-name li { float: left; width: 120px;}
+            .col-span span { display: inline-block;width: 120px;}
+            .col-box p { background: #dedede}
+        </style>
+	</head>
+	<body>
+        <h1>5.5 实战：利用计算属性、指令等知识开发购物车</h1>
+        <br />
+        <h2>购物车示例（全选、多选）</h2>
+         <p>
+            <b>练习2：</b>将商品列表list改为一个二维数组来实现商品分类，比如可分为“电子产品”，“生活用品”，和“果蔬”，
+            同类商品聚合在一起。提示，你可能会用到两次v-for。
+        </p>
+        <div id="app">
+            <template v-if="list.length">
+                    <ul class="clearfix col-name">
+                        <li><input type="checkbox" @click="checkAll" />全选</li>
+                        <li>序号</li>
+                        <li>商品名称</li>
+                        <li>商品单价</li>
+                        <li>商品数量</li>
+                        <li>操作</li>
+                    </ul>
+                    <p>电子产品</p>
+                    <ul  v-for="(item, index) in type1">
+                            <li class="col-span">
+                               <!-- <p v-else-if="item.type === 2">果蔬</p>
+                               <p v-else>日用品</p>-->
+                                <span><input type="checkbox" @click="checkOnce(item.id)" /></span>
+                                <span>{{ index + 1 }}</span>
+                                <span>{{ item.name }}</span>
+                                <span>{{ item.price }}</span>
+                                <span>{{ item.count }}</span>
+                                <span></span>
+                            </li>
+                    </ul>
+                
+                    <p>果蔬</p>
+                    <ul  v-for="(item, index) in type2">
+                            <li class="col-span">
+                               <!-- <p v-else-if="item.type === 2">果蔬</p>
+                               <p v-else>日用品</p>-->
+                                <span><input type="checkbox" @click="checkOnce(item.id)"  /></span>
+                                <span>{{ index + 1 }}</span>
+                                <span>{{ item.name }}</span>
+                                <span>{{ item.price }}</span>
+                                <span>{{ item.count }}</span>
+                                <span></span>
+                            </li>
+                    </ul>
+                
+                    <p>日用品</p>
+                    <ul  v-for="(item, index) in type3">
+                            <li class="col-span">
+                               <!-- <p v-else-if="item.type === 2">果蔬</p>
+                               <p v-else>日用品</p>-->
+                                <span><input type="checkbox" @click="checkOnce(item.id)"  /></span>
+                                <span>{{ index + 1 }}</span>
+                                <span>{{ item.name }}</span>
+                                <span>{{ item.price }}</span>
+                                <span>{{ item.count }}</span>
+                                <span></span>
+                            </li>
+                    </ul>
+                    <p>已选择：{{ checkTag.join(',') }}</p>
+                    <p>总价：{{ priceTotal }}</p>
+            </template>
+            <div v-else>购物车没有商品</div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    list: [
+                        {
+                            id: 1,
+                            type: 1,
+                            name: 'iphone 7',
+                            price: 3988,
+                            count: 1
+                        },
+                        {
+                            id: 2,
+                            type: 2,
+                            name: '桃子',
+                            price: 3,
+                            count: 1
+                        },
+                        {
+                            id: 3,
+                            type: 1,
+                            name: 'ipad Pro',
+                            price: 3588,
+                            count: 1
+                        },
+                        {
+                            id: 4,
+                            type: 1,
+                            name: 'MacBook Pro',
+                            price: 13988,
+                            count: 1
+                        },
+                        {
+                            id: 5,
+                            type: 2,
+                            name: '梨子',
+                            price: 6,
+                            count: 1
+                        },
+                        {
+                            id: 6,
+                            type: 3,
+                            name: '洗发水',
+                            price: 26,
+                            count: 1
+                        },
+                        {
+                            id: 7,
+                            type: 2,
+                            name: '黄瓜',
+                            price: 4,
+                            count: 1
+                        },
+                        {
+                            id: 8,
+                            type: 3,
+                            name: '毛巾',
+                            price: 12,
+                            count: 1
+                        },
+                        {
+                            id: 9,
+                            type: 3,
+                            name: '沐浴露',
+                            price: 30,
+                            count: 1
+                        }
+                    ],
+                    isCheckAll: false,
+                    checkTag: []
+                },
+                computed: {
+                    type1: function(){
+                        var arry1 = [];
+                        for(var i = 0; i < this.list.length; i++){
+                            if(this.list[i].type === 1){
+                               arry1.push(this.list[i]);
+                            }
+                        }
+                        return arry1;
+                    },
+                    type2: function(){
+                        var arry2 = [];
+                        for(var i = 0; i < this.list.length; i++){
+                            if(this.list[i].type === 2){
+                               arry2.push(this.list[i]);
+                            }
+                        }
+                        return arry2;
+                    },
+                    type3: function(){
+                        var arry3 = [];
+                        for(var i = 0; i < this.list.length; i++){
+                            if(this.list[i].type === 3){
+                               arry3.push(this.list[i]);
+                            }
+                        }
+                        return arry3;
+                    },
+                    priceTotal: function(){
+                        var total = 0;
+                    }
+                },
+                methods: {
+                    checkOnce: function(id){
+                        let idIndex = this.checkTag.indexOf(id);
+                        if(idIndex >= 0){
+                           //已选中
+                            this.checkTag.splice(idIndex, 1);
+                        }else{
+                            this.checkTag.push(id);
+                        }                        
+                    },
+                    checkAll: function(){
+                        this.isCheckAll = !this.isCheckAll;
+                        this.checkTag = [];
+                        if(this.isCheckAll){
+                            this.type1.forEach(function(item){
+                                this.checkTag.push(item.id);
+                            },this);
+                            /*this.list.forEach(function(item){
+                                this.checkTag.push(item.id);
+                            },this);*/
+                        }else{
+                            this.checkTag = [];
+                        }
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>    

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>3.1计算属性</title>
+	</head>
+	<body>
+        <h1>3.1什么是计算属性</h1>
+        <h4>模板内的表达式常用于简单的运算，当期过长或逻辑复杂时，会难以维护，这个时候就可以使用计算属性。</h4>
+        <div>
+            <pre>
+                &lt;div&gt; {{ text.split(',').reverse().join(',') }}&gt;/div&lt;
+            </pre>
+            <br />
+            这里的表达式包含三个操作，并不是很清晰，所以在遇到复杂的逻辑时应该使用计算属性。
+            上例可用计算属性进行改写：
+            <pre>
+                &lt;div id="app"&gt;
+                    {{ reversedText }}
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            text: '123,456'
+                        },
+                        computed: {
+                            reversedText: function(){
+                                return this.text.split(',').reverse().join(',');
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            所有的计算属性都以函数的形式写在Vue实例内的computed选项内，最终返回计算后的结果。
+        </div>
+    </body>
+</html>    

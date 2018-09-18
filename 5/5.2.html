@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>5.2条件渲染指令</title>
+	</head>
+	<body>
+        <h1>5.2条件渲染指令</h1>
+        <br />
+        <h2>5.2.1 v-if、v-else-if、v-else</h2>
+        <p>
+            与javascript的条件语句if、else、else if类似，Vue.js的条件指令可以根据表达式的值在DOM中渲染或销毁元素组件，例如：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;p v-if="status === 1"&gt;当status为1时显示该文本&lt;/p&gt;
+                    &lt;p v-else-if="status===2"&gt;当status为2时显示该文本&lt;/p&gt;
+                    &lt;p v-else&gt;否则显示该文本&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            status: 1
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+             <div id="app">
+                <p v-if="status === 1">当status为1时显示该文本</p>
+                <p v-else-if="status === 2">当status为2时显示该文本</p>
+                <p v-else>否则显示该文本</p>
+            </div>
+            <script>
+                var app = new Vue({
+                    el: '#app',
+                    data: {
+                        status: 1
+                    }
+                })
+            </script>
+            v-else-if要紧跟v-if，v-else要紧跟v-else-if或v-if，表达式的值为真时，当前元素/组件及所有子节点将被渲染，为假时移除。如果一次判断的是多个元素，可以在Vue.js内置的&lt;template&gt;元素上使用条件指令，最终渲染结果不会包含该元素，例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;template v-if="status === 1"&gt;
+                        &lt;p&gt;这是一段文本&lt;/p&gt;
+                         &lt;p&gt;这是一段文本&lt;/p&gt;
+                          &lt;p&gt;这是一段文本&lt;/p&gt;
+                    &lt;/template&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            status: 1
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <br />
+        
+        <p>
+            Vue在渲染元素时，出于效率考虑，会尽可能的复用元素而非重新渲染，比如下面的示例：
+            <pre>
+                <div id="app-2">
+                    <template v-if="type === 'name'">
+                        <label>用户名：</label>
+                        <input placeholder="输入用户名">
+                    </template>
+                    <template v-else>
+                        <label>邮箱：</label>
+                        <input placeholder="输入邮箱">
+                    </template>
+                    <button @click="handleToggleClick">切换输入类型</button>
+                </div>
+                <script>
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            type: 'name'
+                        },
+                        methods: {
+                            handleToggleClick: function(){
+                                this.type = this.type === 'name' ? 'mail' : 'name';
+                            }
+                        }
+                    })
+                </script>
+            </pre>
+            在输入内容之后，点击切换按钮，虽然DOM变了，但是之前在输入框输入的内容并没有改变，只是切换了palceholder的内容
+            ，说明input元素被复用了。（审查元素可查看）
+        </p>
+        <p>
+            如果你不希望这样做，可以使用Vue.js提供的key属性，它可以让你自己决定是否要复用元素，key的值必须是唯一的，例如：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;template v-if="type === 'name'"&gt;
+                        &lt;label&gt;用户名：&lt;/label&gt;
+                        &lt;input placeholder="输入用户名" key="name-input"&gt;
+                    &lt;/template&gt;
+                    &lt;template v-else&gt;
+                        &lt;label&gt;邮箱：&lt;/label&gt;
+                        &lt;input placeholder="输入邮箱" key="mail-input"&gt;
+                    &lt;/template&gt;
+                    &lt;button @click="handleToggleClick"&gt;切换输入类型&lt;/button&gt;
+                &lt;/div&gt;
+            </pre>
+            给两个input元素都增加key后，就去不会复用了，切换类型时输入的内容也会被删除，不过label元素仍然是被复用的，因为没有添加key属性。
+        </p>
+
+
+        <hr />
+        <br />
+        <br />
+
+        <h2>5.2.2 v-show</h2>
+        <p>
+            v-show的用法与v-if的用法基本一致，只不过v-show是改变元素的css属性display。当v-show的表达式值为false
+            时，元素会隐藏。查看DOM结构会看到元素上加载了内联样式display: none；例如：
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;p v-show="status === 1"&gt;当status为1时显示该行&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app3 = new Vue({
+                        el: '#app-3',
+                        data: {
+                            status: 2
+                        }
+                    })
+                &lt;/script&gt;
+                
+                渲染后的结果为：
+                &lt;p style="display: none;"&gt;当status为1时显示该行&lt;/p&gt;
+            </pre>
+        </p>
+
+
+        <hr />
+        <br />
+        <br />
+
+        <h2>5.2.2 v-if与v-show的选择</h2>
+        <p>
+            v-if和v-show具有类似的功能，不过v-if才是真正的条件渲染，它会根据表达式适当的销毁或重建元素及绑定的事件或子组件。若表达式的起始值为false，则一开始元素/组件并不会渲染，只有当条件第一次变为真时才开始编译。
+        </p>
+        <p>
+            而v-show只是简单的css属性切换，无论条件真与否，都会被编译。相比之下，v-if更适合条件不经常改变的场景，
+            因为它切换的开销相对较大，而v-show适用于频繁切换条件。
+        </p>
+    </body>
+</html>    

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>7 组件详解</title>
+        <link href="../static/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	</head>
+	<body>
+        <br />
+        <h1>7.3  组件通信</h1>
+        <p>
+            我们已经知道，从父组件向子组件通信，通过props传递数据就可以了，但Vue组件通信的场景不止有
+            这一种，归纳起来，组件之间通信可以用下图表示：
+            <br />
+            <img src="../img/7-2.jpg">
+            <br />
+            组件关系可分为父子组件通信、兄弟组件通信、跨级组件通信。本节将介绍各种组件之间通信的方法。
+        </p>
+        <p>
+            <br />
+            <b>7.3.1 自定义事件</b>
+            <br />
+            当子组件需要向父组件传递数据时，就要用到自定义事件。我们在介绍指令v-on时有提到，v-on除了监听
+            DOM事件外，还可以用于组件之间的自定义事件。
+            <br />
+            如果你了解过javascript的设计模式——观察者模式，一定知道dispatchEvent和addEventListener这两个方法。
+            Vue组件也有与之类似的一套模式，子组件用$emit()来触发事件，父组件用$on()来监听子组件的事件。
+            <br />
+            父组件也可以直接在子组件的自定义标签上使用v-on来监听子组件触发的自定义事件，示例代码如下：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;p&gt;总数：{{ total }}&lt;/p&gt;
+                    &lt;my-component 
+                    @increase="handleGetTotal"
+                    @reduce="handleGetTotal"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        template: '\
+                        &lt;div&gt;\
+                            &lt;button @click="handleIncrease"&gt;+1&lt;/button&gt;\
+                            &lt;button @click="handleReduce"&gt;-1&lt;/button&gt;\
+                        &lt;/div&gt;',
+                        data: function(){
+                            return {
+                                counter: 0 
+                            }
+                        },
+                        methods: {
+                            handleIncrease: function(){
+                                this.counter++;
+                                //使用$emit触发父组件的自定义事件。
+                                this.$emit('increase', this.counter);//触发当前实例上的事件，第一个参数为自定义事件的名称，第二个参数即要传递的数据
+                            },
+                            handleReduce: function(){
+                                this.counter--;
+                                this.$emit('reduce', this.counter);//触发当前实例上的事件，使用$emit触发父组件的自定义事件。
+                            }
+                        }
+                    });
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            total: 0
+                        },
+                        methods: {
+                            handleGetTotal: function(total){
+                                this.total = total;
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app">
+            <p>总数：{{ total }}</p>
+            <my-component
+                          @increase="handleGetTotal"
+                          @reduce="handleGetTotal"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                template: '\
+                <div>\
+                    <button @click="handleIncrase">+1</button>\
+                    <button @click="handleReduce">-1</button>\
+                </div>',
+                data: function(){
+                    return {
+                        counter: 0
+                    }
+                },
+                methods: {
+                    handleIncrase: function(){
+                        this.counter++;
+                        this.$emit('increase', this.counter);   //触发当前实例上的事件，使用$emit触发父组件的自定义事件。
+                    },
+                    handleReduce: function(){
+                        this.counter--;
+                        this.$emit('reduce', this.counter);
+                    }
+                }
+            });
+            
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    total: 0
+                },
+                methods: {
+                    handleGetTotal: function(total){
+                        this.total = total;
+                    }
+                }
+            })
+        </script>
+        <p>
+            上面的示例中，子组件有两个按钮，分别实现加1和减1的效果，在改变组件的data “counter”后，通过$emit()再把它传递给父组件，父组件用v-on:increase和v-on:reduce（示例使用的是语法糖）。$emit()的第一个参数是自定义事件的名称，
+            例如示例的increase和reduce后面的参数都是要传递的数据，可以不填或填写多个。
+            <br />
+            除了用v-on在组件上监听自定义事件外，也可以监听DOM事件，这时可以用.native修饰符表达监听的是一个原生事件，
+            监听是该组件的根元素，示例代码如下：
+            <pre>
+                &lt;my-component v-on:click.native="handleClick"&gt;&lt;/my-component&gt;
+            </pre>
+        </p>
+        <br />
+
+        <p>
+            <br />
+            <b>7.3.2 使用v-model</b>
+            <br />
+            Vue 2.x可以在自定义组件上使用v-model指令，我们先来看一个示例：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;p&gt;总数：{{ total }}&lt;/p&gt;
+                    &lt;my-component v-model="total"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        template: '&lt;button @click="handleClick"&gt;+1&lt;/button&gt;',
+                        data: function(){
+                            return {
+                                counter: 0
+                            }
+                        },
+                        methods: {
+                            handleClick: function(){
+                                this.counter++;
+                                this.$emit('input', this.counter);//触发父组件的input事件，并将值传给父组件
+                            }
+                        }
+                    });
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            total: 0
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>    
+        <div id="app-1">
+            <p>总数：{{ total }}</p>
+            <my-component v-model="total"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                template: '<button @click="handleClick">+1</button>',
+                data: function(){
+                    return {
+                        counter: 0
+                    }
+                },
+                methods: {
+                    handleClick: function(){
+                        this.counter++;
+                        this.$emit('input', this.counter);
+                    }
+                }
+            });
+            var app1 = new Vue({
+                el: '#app-1',
+                data: {
+                    total: 0
+                }
+            })
+        </script>
+        <p>
+            仍然是点击按钮加1的效果，不过这次组件$emit()的事件名是特殊的input，在使用组件的父级，并没有在&lt;my-component&gt;上使用@input="handler"，而是直接使用了v-model绑定的一个数据total。这也可以称作
+            是一个语法糖，因为上面的示例可以间接的用自定义事件来实现：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;p&gt;总数：{{ total }}&lt;/p&gt;
+                    &lt;my-component @input="handleGetTotal"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        template: '&lt;button @click="addClick"&gt;+1&lt;/button&gt;',
+                        data: function(){
+                            return {
+                                counter: 0
+                            }
+                        },
+                        methods: {
+                            addClick: function(){
+                                this.counter++;
+                                this.$emit('input', this.counter);
+                            }
+                        }
+                    });
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            total: 0
+                        },
+                        methods: {
+                            handleGetTotal: function(total){
+                                this.total = total;
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-2">
+            <p>总数：{{ total }}</p>
+            <my-component @input="handleGetTotal"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                template: '<button @click="addClick">+1</button>',
+                data: function(){
+                    return {
+                        counter: 0
+                    }
+                },
+                methods: {
+                    addClick: function(){
+                        this.counter++;
+                        this.$emit('input', this.counter);
+                    }
+                }
+            });
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    total: 0
+                },
+                methods: {
+                    handleGetTotal: function(total){
+                        this.total = total;
+                    }
+                }
+            })
+        </script>
+        <br />
+        <p>
+            v-model还可以用来创建自定义的表单输入组件，进行数据双向绑定，例如：
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;b&gt;总数：{{ total }}&lt;/b&gt;
+                    &lt;my-component v-model="total"&gt;&lt;/my-component&gt;
+                    &lt;button @click="handleReduce"&gt;-1&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        props: ['value'],
+                        template: '&lt;input :value="value" @input="updateValue" /&gt;',
+                        methods: {
+                            updateValue: function(event){
+                                this.$emit('input',event.target.value);
+                            }
+                        }
+                    });
+                    var app3 = new Vue({
+                        el: '#app-3',
+                        data: {
+                            total: 0
+                        },
+                        methods: {
+                            handleReduce: function(){
+                                this.total--;
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-3">
+            <b>总数：{{ total }}</b>
+            <my-component v-model="total"></my-component>
+            <button @click="handleReduce">-1</button>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                props: ['value'],
+                template: '<input :value="value" @input="updateValue" >',
+                methods: {
+                    updateValue: function(event){
+                        this.$emit('input', event.target.value);
+                    }
+                }
+            });
+            var app3 = new Vue({
+                el: '#app-3',
+                data: {
+                    total: 0
+                },
+                methods: {
+                    handleReduce: function(){
+                        this.total--;
+                    }
+                }
+            })
+        </script>
+        <p>
+            实现这样一个具有双向数据绑定的v-model组件要满足下面两个要求：
+            <br />
+            1.接收一个value属性。
+            <br />
+            2.在有新的value时触发input。
+        </p>
+        <br />
+
+
+
+        <br />
+
+        <p>
+            <br />
+            <b>7.3.3 非父子组件通信</b>
+            <br />
+            在实际业务中，除了父子组件通信外，还有很多非父子组件通信的场景，非父子组件一般有两种，
+            兄弟组件和跨多级组件。为了更加彻底的了解Vue.js 2.x中的通信方法，我们先来看一下在Vue.js 1.x中
+            是如何实现的，这样便于我们了解Vue.js的设计思想。
+            <br />
+            在Vue.js 1.x中，除了$emit()方法外，还提供了$dispatch()和$broadcast()这两种方法。$dispatch()用于向上级
+            派发事件，只要是它的父级（一级或多级以上），都可以在Vue实例的events选项内接收，示例代码如下：
+            <pre>
+                &lt;div id="app-4"&gt;
+                    {{ message }}
+                    &lt;my-component&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component',{
+                        template: '&lt;button @click="handleDispatch"&gt;派发事件&lt;/button&gt;',
+                        methods: {
+                            handleDispatch: function(){
+                                this.$dispatch('on-message', '来自内部组件的数据');
+                            }
+                        }
+                    });
+                    var app4 = new Vue({
+                        el: '#app-4',
+                        data: {
+                            message: ''
+                        },
+                        events: {
+                            'on-message': function(msg){
+                                this.message = msg;
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            同理，$broadcast()是由上级向下级广播事件的，用法完全一致，只是方向相反。
+            <br />
+            这两种方法一旦发生事件后，任何组件都可以接收到的，就近原则，而且会在第一次接收到后停止冒泡，除非返回true。
+             <br />
+            这两个方法虽然看起来很好用，但在Vue.js 2.x中都废弃了，因为基于组件结构树的事件流方式让人难以理解，并且在
+            组件结构扩展的过程中会变得越来越脆弱，并且不能解决兄弟组件通信的问题。
+            <br />
+            在Vue.js 2.x中推荐使用一个空的Vue实例作为中央事件总线，也就是一个中介。
+        </p>
+        <p>
+            示例代码如下：
+            <pre>
+                <div id="app-5">
+                    {{ message }}
+                    <component-a></component-a>
+                </div>
+                <script>
+                    var bus = new Vue();
+                    
+                    Vue.component('component-a',{
+                        template: '<button @click="handleEvent">传递事件</button>',
+                        methods: {
+                            handleEvent: function(){
+                                bus.$emit('on-message', '来自组件component-a的内容')
+                            }
+                        }
+                    });
+                    var app5 = new Vue({
+                        el: '#app-5',
+                        data: {
+                            message: ''
+                        },
+                        mounted: function(){
+                            var _this = this;
+                            //在实例初始化时，监听来自bus实例的事件
+                            bus.$on('on-message', function(msg){
+                                _this.message = msg;
+                            })
+                        }
+                    })
+                </script>
+            </pre>
+        </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </body>
+</html>    

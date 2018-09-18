@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>4.3绑定内联样式</title>
+	</head>
+	<body>
+        <h1>4.3绑定内联样式</h1>
+        <p>
+            大多数情况下，直接写一长串的样式不便于阅读和维护，所以一般写在data或computed里，以data为例：
+            <pre>
+                &lt;div id="app"&gt;
+                    &lt;div :style="styles"&gt;文本&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            styles: {
+                                color: 'red',
+                                fontSize: 14 + 'px'
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            应用多个样式对象时，可以使用数组语法：
+             &lt;div :style="[styleA, styleB]"&gt;文本 &lt;/div&gt;
+            在实际业务中，:style的数组语法并不通用，因为往往可以写在一个对象里面；而较为常用的应当是计算属性。
+            <br />
+            另外，使用:style时，Vue.js会自动给特殊的css属性名称增加前缀，比如transform
+        </p>
+    </body> 
+</html>    

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>5.3 列表渲染指令v-for</title>
+	</head>
+	<body>
+        <h1>5.3列表渲染指令v-for</h1>
+        <br />
+        <h2>5.3.1 基本用法</h2>
+        <p>
+            当需要将一个数组遍历或枚举一个对象循环显示时，就会用到列表渲染指令v-for。它的表达式需要结合in来使用，
+            类似item in items的形式，看下面的示例：
+            <pre>
+               
+                &lt;div id="app"&gt;
+                    &lt;ul&gt;
+                        &lt;li v-for="book in books"&gt;{{ book.name }}&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            books: [
+                                { name: '《Vue.js实战》' },
+                                { name: '《Javascript语言精粹》' },
+                                { name: '《Javascript高级程序设计》' }
+                            ]
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app">
+            <ul>
+                <li v-for="book in books">{{ book.name }}</li>
+            </ul>
+        </div>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    books: [
+                        { name: '《Vue.js实战》' },
+                        { name: '《Javascript语言精粹》' },
+                        { name: '《Javascript高级程序设计》' }
+                    ]
+                }
+            })
+        </script>
+        <p>
+            在表达式中，books是数据，book是当前数组元素的别名，循环出的每个li内的元素都可以访问到对应的当前数据book。
+            列表渲染也支持用of来代替in作为分隔符，它更接近javascript迭代器的语法：
+            <pre>
+                <li v-for="book of books">{{ book.name }}</li>
+            </pre>
+        </p>
+        <p>
+            v-for的表达式支持一个可选参数作为当前项的索引，例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;ul&gt;
+                        &lt;li v-for="(book, index) in books">{{ index }} - {{ book.name }}&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            books: [
+                                { name: '《Vue.js实战》' },
+                                { name: '《Javascript语言精粹》' },
+                                { name: '《Javascript高级程序设计》' }
+                            ]
+                        }
+                    })
+                &lt;/script&gt;
+                
+            </pre>
+            分隔符in前的语句使用括号，第二项就是books当前项的索引，渲染后的结果如下：
+        </p>
+        <div id="app-1">
+            <ul>
+                <li v-for="(book, index) in books">{{ index }} - {{ book.name }}</li>
+            </ul>
+        </div>
+        <script>
+            var app1 = new Vue({
+                el: '#app-1',
+                data: {
+                    books: [
+                        { name: '《Vue.js实战》' },
+                        { name: '《Javascript语言精粹》' },
+                        { name: '《Javascript高级程序设计》' }
+                    ]
+                }
+            })
+        </script>
+        
+        <p>
+            与v-if一样，v-for也可以用在内置标签&lt;li&gt;上，将多个元素进行渲染：
+            <pre>
+                &lt;div id="app-2"&gt;
+                    &lt;ul&gt;
+                        &lt;template v-for="book in books"&gt;
+                            &lt;li&gt;书名：{{ book.name }}&lt;/li&gt;
+                            &lt;li&gt;作者： {{ book.author }}&lt;/li&gt;
+                        &lt;/template&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            books: [
+                                { name: '《Vue.js实战》', author: '梁灏' },
+                                { name: '《Javascript语言精粹》', author: 'Douglas Crockford' },
+                                { name: '《Javascript高级程序设计》', author: 'Nicholas C.Zakas' }
+                            ]
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+         <div id="app-2">
+            <ul>
+                <template v-for="book in books">
+                    <li>书名：{{ book.name }}</li>
+                    <li>作者： {{ book.author }}</li>
+                </template>
+            </ul>
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: '#app-2',
+                data: {
+                    books: [
+                        { name: '《Vue.js实战》', author: '梁灏' },
+                        { name: '《Javacript语言精粹》', author: 'Douglas Crockford' },
+                        { name: '《Javacript高级程序设计》', author: 'Nicholas C.Zakas' }
+                    ]
+                }
+            })
+        </script>
+
+        <p>
+            除了数组外，对象的属性也是可以遍历的，例如：
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;span v-for="value in user"&gt;{{ value }}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app3 = new Vue({
+                        el: '#app-3',
+                        data: {
+                            user: {
+                                name: 'Aresn',
+                                gender: '男',
+                                age: 26
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            渲染结果为：
+        </p>
+        <div id="app-3">
+            <span v-for="value in user">{{ value }}</span>
+        </div>
+        <script>
+            var app3 = new Vue({
+                el: '#app-3',
+                data: {
+                    user: {
+                        name: 'Aresn',
+                        gender: '男',
+                        age: 26
+                    }
+                }
+            })
+        </script>
+        <p>
+            遍历对象时，有两个可选参数，分别是键名和索引：
+            <pre>
+                &lt;div id="app-4"&gt;
+                    &lt;ul&gt;
+                        &lt;li v-for="(value, key, index) in user"&gt;{{ index }} - {{ key }} : {{ value }}&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app4 = new Vue({
+                        el: '#app-4',
+                        data: {
+                            user: {
+                                name: 'Aresn',
+                                gender: '男',
+                                age: 26
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            渲染后的结果如下所示：
+        </p>
+         <div id="app-4">
+            <ul>
+                <li v-for="(value, key, index) in user">{{ index }} - {{ key }} : {{ value }}</li>
+            </ul>
+        </div>
+        <script>
+            var app4 = new Vue({
+                el: '#app-4',
+                data: {
+                    user: {
+                        name: 'Aresn',
+                        gender: '男',
+                        age: 26
+                    }
+                }
+            })
+        </script>
+        <p>
+            v-for还可以迭代整数：
+            <pre>
+                &lt;div id="app-5"&gt;
+                    &lt;span v-for="n in 10"&gt;{{ n }}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app5 = new Vue({
+                        el: '#app-5'
+                    })
+                &lt;/script&gt;
+            </pre>
+            渲染后的结果为：
+        </p>
+        <div id="app-5">
+            <span v-for="n in 10">{{ n }}</span>
+        </div>
+        <script>
+            var app5 = new Vue({
+                el: '#app-5'
+            })
+        </script>
+
+
+        <hr />
+        <br />
+        <br />
+
+        <h2>5.3.2 数组更新</h2>
+        <p>
+            Vue的核心是数据与视图的双向绑定，当我们修改数组时，Vue会检测到数据变化，所以用v-for渲染的视图也会立即更新。
+            Vue包含了一组观察数组变异的方法，使用它们改变数组也会触发视图更新：
+        </p>
+        <div>
+             <ul>
+                <li>push() 往数组后面添加一元素，成功返回当前数组的长度</li>
+                 <li>pop() 删除数组最后一个元素，成功返回删除元素的值</li>
+                 <li>shift() 删除数组的第一个元素，成功返回删除元素的值</li>
+                 <li>unshift() 往数组的最前面添加一个元素，成功返回当前数组的长度</li>
+                 <li>splice() 有三个参数，第一个参数是想要删除元素的下标（必选），第二个是想要删除的个数（必选），第三个是删除后想要在原位置替换的值（可选）</li>
+                 <li>sort()使数组按照字符编码默认从小到大排序，成功返回排序后的数组。</li>
+                 <li>reverse() 将数组倒序，成功返回倒序后的数组</li>
+            </ul>
+        </div>
+        <p>
+            使用以上方法会改变被这些方法调用的原始数组，有些方法不会改变原数组，例如：
+            <ul>
+                <li>filter()</li>
+                <li>concat() 基于当前数组中的所有项创建一个新数组。简单的说，concat()先给当前数组创建一个副本，然后将接收到的参数添加到这个副本（数组）的末尾，最后返回一个新的数组。</li>
+                <li>slice() 接受一个或两个参数，即要返回项的起始位置和结束位置。当只给slice()传递一个参数时，该方法返回从该参数指定位置开始到当前数组末尾的所有项。</li>
+            </ul>
+            它们返回的是一个新数组，在使用这些非变异方法时，可以使用新数组来替换原数组。例如：
+            <pre>
+                &lt;div id="app-6"&gt;
+                    &lt;ul&gt;
+                        &lt;template v-for="book in books"&gt;
+                            &lt;li&gt;书名：{{ book.name }}&lt;/li&gt;
+                            &lt;li&gt;作者： {{ book.author }}&lt;/li&gt;
+                        &lt;/template&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app6 = new Vue({
+                        el: '#app-6',
+                        data: {
+                            books: [
+                                { name: '《Vue.js实战》', author: '梁灏' },
+                                { name: '《Javascript语言精粹》', author: 'Douglas Crockford' },
+                                { name: '《Javascript高级程序设计》', author: 'Nicholas C.Zakas' }
+                            ]
+                        }
+                    });
+                    app6.books = app6.books.filter(function(item){
+                        return item.name.match(/Javascript/);
+                    });
+                &lt;/script&gt;
+            </pre>
+            渲染结果：
+        </p>
+        <div id="app-6">
+            <ul>
+                <template v-for="book in books">
+                    <li>书名：{{ book.name }}</li>
+                    <li>作者： {{ book.author }}</li>
+                </template>
+            </ul>
+        </div>
+        <script>
+            var app6 = new Vue({
+                el: '#app-6',
+                data: {
+                    books: [
+                        { name: '《Vue.js实战》', author: '梁灏' },
+                        { name: '《Javascript语言精粹》', author: 'Douglas Crockford' },
+                        { name: '《Javascript高级程序设计》', author: 'Nicholas C.Zakas' }
+                    ]
+                }
+            });
+            app6.books = app6.books.filter(function(item){
+                return item.name.match(/Javascript/);
+            });
+        </script>
+       <p>
+           在渲染的结果中，第一项《Vue.js实战》被过滤掉了，只显示了书名中包含Javascript的选项。
+           <br />
+           Vue在检测到数组变化时，并不是直接重新渲染整个列表，而是最大化的复用DOM元素。替换的数组中，含有相同元素的项不会被重新渲染，因此可以大胆地用新数组来替换旧数组，不用担心性能问题。
+           <br />
+           需要注意的是，以下变动的数组中，Vue是不能检测到的，也不会触发视图更新：
+           <ul>
+                <li>通过索引直接设置项，比如app.books[3] = {...}。</li>
+                <li>修改数组长度，比如app.books.length = 1</li>
+            </ul>
+            解决第一个问题可以用两种方法实现同样的效果，第一种是使用Vue内置的set方法：
+            <pre>
+                Vue.set(app.books, 3, {
+                    name: '《css揭秘》',
+                    author: '[希] Lea Verou'
+                });
+            </pre>
+            如果是在webpack中使用组件化的方式（进阶篇将介绍），默认是没有导入Vue的，这时可以使用$set，例如：
+            <pre>
+                this.$set(app.books, 3, {
+                    name: '《css揭秘》',
+                    author: '[希] Lea Verou'
+                });
+            </pre>
+            这里的this指向的就是当前组件实例，即app。在非webpack模式下也可以使用$set方法，例如ap.$set(...)
+        </p>
+
+
+        <hr />
+        <br />
+        <br />
+
+        <h2>5.3.3 过滤与排序</h2>
+        <p>
+            当你不想改变原数组，想通过一个数组的副本来做过滤与排序的显示时，可以使用计算属性来返回过滤或排序后的数组，例如：
+            <pre>
+                &lt;div id="app-7"&gt;
+                    &lt;ul&gt;
+                        &lt;template v-for="book in filterBooks"&gt;
+                            &lt;li&gt;书名： {{ book.name }}&lt;/li&gt;
+                            &lt;li&gt;作者： {{ book.author }}&lt;/li&gt;
+                        &lt;/template&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app7 = new Vue({
+                        el: '#app-7',
+                        data: {
+                            books: [
+                                { name: '《Vue.js实战》', author: '梁灏' },
+                                { name: '《Javascript语言精粹》', author: 'Douglas Crockford' },
+                                { name: '《Javascript高级程序设计》', author: 'Nicholas C.Zakas' }
+                            ]
+                        },
+                        computed: {
+                            filterBooks: function(){
+                                return this.books.filter(function(book){
+                                    return book.name.match(/Javascript/);
+                                })
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            上例是把书名中包含Javascript关键词的数据过滤出来，计算属性filterBooks依赖books，但是不会修改books，实现排序也是类似的，比如在此基础上新增加一个计算属性sortedBooks，按照书名的长度由长到短进行排序：
+            <pre>
+                computed: {
+                    sortedBooks: function(){
+                        return this.books.sort(function(a, b){
+                            return a.name.length &lt; b.name.length;
+                        })
+                    }
+                }
+            </pre>
+        </p>
+        <div id="app-7">
+            <ul>
+                <template v-for="book in filterBooks">
+                    <li>书名： {{ book.name }}</li>
+                    <li>作者： {{ book.author }}</li>
+                </template>
+            </ul>
+        </div>
+        <script>
+            var app7 = new Vue({
+                el: '#app-7',
+                data: {
+                    books: [
+                        { name: '《Vue.js实战》', author: '梁灏' },
+                        { name: '《Javascript语言精粹》', author: 'Douglas Crockford' },
+                        { name: '《Javascript高级程序设计》', author: 'Nicholas C.Zakas' }
+                    ]
+                },
+                computed: {
+                    filterBooks: function(){
+                        return this.books.filter(function(book){
+                            return book.name.match(/Javascript/);
+                        })
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>    

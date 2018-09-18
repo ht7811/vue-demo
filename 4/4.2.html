@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<title>4.2绑定class的几种方式</title>
+	</head>
+	<body>
+        <h1>4.2.1对象语法</h1>
+        <p>
+            给v-bind:class设置一个对象，可以动态的切换class，例如：
+            <pre>
+                &lt;div id="app"&gt;
+                   &lt;div :class="{ 'active': isActive }"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app = new Vue({
+                        el: '#app',
+                        data: {
+                            isActive: true
+                        }
+                    })
+                            <p>
+                                        示例中的样的样式btn会始终应用，当数据size不为空时，会应用样式前缀btn-，后加size的值；
+                                        当数据disabled为真时，会应用样式btn-disabled。
+                                    </p>
+                &lt;/script&gt;
+            </pre>
+            上面的示例中，类名active依赖于数据isActive，当其为true时，div会拥有类名Active，为false时则没有
+        </p>
+        <br />
+        <p>
+            对象中也可以传入多个属性，来动态切换class。另外，:calss可以与普通class共存，例如：
+            <pre>
+                &lt;div id="app-1"&gt;
+                    &lt;div class="static" :class="{ 'active': isActive , 'error': isError }"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app1 = new Vue({
+                        el: '#app-1',
+                        data: {
+                            isActive: true,
+                            isError: false
+                        }
+                    }) 
+                &lt;/script&gt;
+            </pre>
+            :calss内的表达式每项为真时，对应的类名也会更新。
+        </p>
+        <br />
+        <p>
+            当:calss的表达式过长或逻辑复杂时，还可以绑定一个计算属性，这是一种很友好和常见的用法，一般
+            当条件多余两个时，都可以使用data或computed，例如使用计算属性：
+            <pre>
+                 &lt;div id="app-2"&gt;
+                     &lt;div :class="classes"&gt;6666 &lt;/div&gt;
+                 &lt;/div&gt;
+                 &lt;script&gt;
+                    var app2 = new Vue({
+                        el: '#app-2',
+                        data: {
+                            isActive: true,
+                            error: null
+                        },
+                        computed: {
+                            classes: function(){
+                                return {
+                                    active: this.isActive && !this.error,
+                                    'text-fail': this.error && this.error.type === 'fail'
+                                }
+                            }
+                        }
+                    })
+                 &lt;/script&gt;
+            </pre>
+            除了计算属性，也可以直接绑定一个object类型的数据，或者使用类似计算属性的methods。
+        </p>
+
+        <hr />
+        <br />
+        <br />
+
+        <h1>4.2.2数组语法</h1>
+        <p>
+            当需要应用多个class时，可以使<div :class="[ activeCls, errorCls ]"></div>用数组语法，给:class绑定一个数组，应用一个class列表：
+            <pre>
+                &lt;div id="app-3"&gt;
+                    &lt;div :class="[ activeCls, errorCls ]"&gt;777&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app3 = new Vue({
+                        el: '#app-3',
+                        data: {
+                            activeCls: 'active',
+                            errorCls: 'error'
+                        }
+                    })
+                &lt;/script&gt;
+                渲染后的结果为： 
+                &lt;div class="active error"&gt;&lt;/div&gt;
+            </pre>
+        </p>
+        <br />
+        <p>
+            也可以使用三元表达式根据条件切换class，例如：
+            <pre>
+                &lt;div id="app-4"&gt;
+                    &lt;div :class="[ isActive ? activeCls : '', errorCls ]"&gt;888&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app4 = new Vue({
+                        el: '#app-4',
+                        data: {
+                            isActive: true,
+                            activeCls: 'active',
+                            errorCls: 'error'
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+            <div id="app-4">
+                <div :class="[ isActive ? activeCls : '', errorCls ]">888</div>
+            </div>
+            <script>
+                var app4 = new Vue({
+                    el: '#app-4',
+                    data: {
+                        isActive: true,
+                        activeCls: 'active',
+                        errorCls: 'error'
+                    }
+                })
+            </script>
+            样式error会始终应用，当数据isActive为真时，样式active才会被应用。class有多个条件时，这样写比较繁琐，可以
+            在数组语法中使用对象语法：
+            <pre>
+                &lt;div id="app-5"&gt;
+                    &lt;div class="[{ 'active' : isActive }, errorCls]"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app5 = new Vue({
+                        el: '#app-5',
+                        data: {
+                            isActive: true,
+                            errorCls: 'error'
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+         <div id="app-5">
+            <div class="[{ 'active' : isActive }, errorCls]">数组中使用对象</div>
+        </div>
+        <script>
+            var app5 = new Vue({
+                el: '#app-5',
+                data: {
+                    isActive: true,
+                    errorCls: 'error'
+                }
+            })
+        </script>
+        <br />
+
+        <p>
+            也可以使用data、computed和methods三种方法，以计算属性为例：
+            <pre>
+                &lt;div id="app-6"&gt;
+                    &lt;button :class="classes"&gt;使用data、computed和methods三种方法，以计算属性为例&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    var app6 = new Vue({
+                        el: '#app-6',
+                        data: {
+                            size: 'large',
+                            disabled: true
+                        },
+                        computed: {
+                            classes: function(){
+                                return [
+                                    'btn',
+                                    {
+                                        ['btn-' + this.size]: this.size !== '',
+                                        ['btn-disabled']: this.disabled
+                                    }
+                                ]
+                            }
+                        }
+                    })
+                &lt;/script&gt;
+            </pre>
+        </p>
+        <div id="app-6">
+            <button :class="classes">使用data、computed和methods三种方法，以计算属性为例</button>
+        </div>
+        <script>
+            var app6 = new Vue({
+                el: '#app-6',
+                data: {
+                    size: 'large',
+                    disabled: true
+                },
+                computed: {
+                    classes: function(){
+                        return [
+                            'btn',
+                            {
+                                ['btn-' + this.size]: this.size !== '',
+                                ['btn-disabled']: this.disabled
+                            }
+                        ]
+                    }
+                }
+            })
+        </script>
+        <p>
+            示例中的样的样式btn会始终应用，当数据size不为空时，会应用样式前缀btn-，后加size的值；
+            当数据disabled为真时，会应用样式btn-disabled。
+        </p>
+
+
+         <hr />
+        <br />
+        <br />
+
+        <h1>4.2.3在组件上使用</h1>
+        <p>
+            如果直接在自定义组件上使用class或:class，样式规则会直接运用到这个组件的根元素上，例如声明一个简单的组件：
+            <pre>
+                Vue.component('my-component', {
+                    template: '<p class="article">一些文本</p>'
+                })
+            </pre>
+            然后再调用这个组件时，应用上面两节介绍的对象语法或数组语法给组件绑定class，以对象语法为例：
+            <pre>
+                &lt;div id="app-7"&gt;
+                    &lt;my-component :class="{'active': isActive}"&gt;&lt;/my-component&gt;
+                &lt;/div&gt;
+                &lt;script&gt;
+                    Vue.component('my-component', {
+                        template: '&lt;p class="article"&gt;一些文本&lt;/p&gt;'
+                    });
+
+                    var app7 = new Vue({
+                        el: '#app-7',
+                        data: {
+                            isActive: true
+                        }
+                    })
+                &lt;/script&gt;
+                最终渲染结果为：
+                <p class="article active">一些文本</p>
+            </pre>
+            这种用法仅适用于自定义组件的最外层是一个根元素，否则会无效，当不满足这种条件或需要给具体的子元素设置类名时，
+            应当使用组件的props来传递。这些用法同样适用于下一节中绑定内联样式style的内容。
+        </p>
+         <div id="app-7">
+            <my-component :class="{'active': isActive}"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component', {
+                template: '<p class="article">一些文本</p>'
+            });
+
+            var app7 = new Vue({
+                el: '#app-7',
+                data: {
+                    isActive: true
+                }
+            })
+        </script>
+    </body>
+</html>    
